@@ -1,15 +1,14 @@
+from sqlmodel import create_engine, Session, SQLModel
 
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+sqlite_file_name = "database.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
 
-uri = "mongodb+srv://ragequit078_db_user:kQlRjoDNE94zatXX@organisateur2.b78cidc.mongodb.net/?appName=organisateur2"
+connect_args = {"check_same_thread": False}
+engine = create_engine(sqlite_url, connect_args=connect_args)
 
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
 
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+def get_session():
+    with Session(engine) as session:
+        yield session
